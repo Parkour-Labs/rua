@@ -6,3 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rua_macros = { path = "../rua_macros" }
+proc-macro2 = { version = "1.0.59", features = ["span-locations"] }
+syn = { version = "2.0.17", features = ["full"] }
+log = "0.4.17"

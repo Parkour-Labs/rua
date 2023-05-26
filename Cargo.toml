@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "rua_annot",
+  "rua_gen",
+  "rua_macros"
+]
