@@ -1,6 +1,6 @@
 //! The adapters that implement the traits in [rua_gen::rua] on the [syn] crate.
 
-use crate::rua::*;
+use crate::models::*;
 
 pub use rua_fn::*;
 
@@ -298,4 +298,39 @@ mod rua_attr {
     }
 
     impl RuaAttr for Attribute {}
+}
+
+pub use rua_mod::*;
+
+/// The adapter for [syn::ItemMod].
+mod rua_mod {
+    use super::*;
+    use syn::ItemMod;
+
+    impl RuaNamed for ItemMod {
+        fn name(&self) -> String {
+            self.ident.to_string()
+        }
+    }
+
+    impl RuaVisible for ItemMod {
+        fn is_pub(&self) -> bool {
+            match self.vis {
+                syn::Visibility::Public(_) => true,
+                _ => false,
+            }
+        }
+    }
+
+    impl RuaHasAttr for ItemMod {
+        fn attrs(&self) -> Vec<&dyn RuaAttr> {
+            let mut res: Vec<&dyn RuaAttr> = vec![];
+            for attr in &self.attrs {
+                res.push(attr);
+            }
+            res
+        }
+    }
+
+    impl RuaMod for ItemMod {}
 }

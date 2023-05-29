@@ -84,7 +84,7 @@ pub trait RuaEnumVariant: RuaNamed + RuaWithFields {
 }
 
 /// A module in Rust.
-pub trait RuaModule: RuaNamed + RuaVisible {}
+pub trait RuaMod: RuaNamed + RuaVisible {}
 
 /// An attribute in Rust. This can be scanned for and used as a filter.
 /// In the cause of `rua`, this will be set to `[rua]` from the `rua_annot`
@@ -98,7 +98,7 @@ pub trait RuaAttr: RuaNamed {
 }
 
 /// Implement this trait to build your own code generator.
-pub trait RuaBuilder {
+pub trait Rua {
     /// Returns the path to the entry point of the module, i.e. the path to the
     /// folder containing the module.
     fn entry_path(&self) -> String;
@@ -106,10 +106,10 @@ pub trait RuaBuilder {
     /// Reads the file at the path specified. This is here just so that we
     /// don't have to rely on the [std::fs] module. It will make it easier
     /// for us to test things out.
-    fn read_file(&self, path: &impl AsRef<str>) -> String;
+    fn read_file(&self, path: impl AsRef<str>) -> String;
 
     /// Sets the module to be scanned.
-    fn set_module<T: RuaModule>(&mut self, m: &T);
+    fn set_module<T: RuaMod>(&mut self, m: &T);
 
     /// If set to [true], then private things will be scanned.
     fn should_scan_private(&self) -> bool {
