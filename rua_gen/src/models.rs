@@ -3,7 +3,11 @@
 //! so that we will have a nice layer of abstraction between the models and
 //! the ast.
 
+use std::path::{Path, PathBuf};
+
 use syn::Type;
+
+use crate::errors::RuaFsError;
 
 /// Something that has attributes.
 pub trait RuaHasAttr {
@@ -38,6 +42,12 @@ pub trait RuaVisible {
 pub trait RuaTyped {
     /// Returns the type of the thing.
     fn ty(&self) -> &Type;
+}
+
+/// Something that has a type as a string.
+pub trait RuaStrTyped {
+    /// Returns the type of the thing.
+    fn ty(&self) -> &str;
 }
 
 /// Somthing that has fields.
@@ -101,26 +111,43 @@ pub trait RuaAttr: RuaNamed {
 pub trait Rua {
     /// Returns the path to the entry point of the module, i.e. the path to the
     /// folder containing the module.
-    fn entry_path(&self) -> String;
+    fn entry_path(&self) -> PathBuf;
+
+    /// Checks if the path is a directory.
+    fn is_dir(&self, path: impl AsRef<Path>) -> bool {
+        let path = path.as_ref();
+        path.is_dir()
+    }
+
+    /// Checks if the file at the path is a file.
+    fn is_file(&self, path: impl AsRef<Path>) -> bool {
+        let path = path.as_ref();
+        path.is_file()
+    }
+
+    /// Checks if the file at the path exists.
+    fn path_exists(&self, path: impl AsRef<Path>) -> bool {
+        let path = path.as_ref();
+        path.exists()
+    }
 
     /// Reads the file at the path specified. This is here just so that we
     /// don't have to rely on the [std::fs] module. It will make it easier
     /// for us to test things out.
-    fn read_file(&self, path: impl AsRef<str>) -> String;
+    fn read_file(&self, path: impl AsRef<Path>) -> Result<String, RuaFsError> {
+        let path = path.as_ref();
+        std::fs::read_to_string(path).map_err(|e| RuaFsError {
+            path: path.to_path_buf(),
+            err: Box::new(e),
+        })
+    }
 
     /// Sets the module to be scanned.
     fn set_module<T: RuaMod>(&mut self, m: &T);
 
-    /// If set to [true], then private things will be scanned.
-    fn should_scan_private(&self) -> bool {
-        false
-    }
-
-    /// If set to [None], then all things will be scanned. Otherwise, only the
-    /// attributes in the returned vector will be scanned.
-    fn attrs_to_scan(&self) -> Option<&Vec<&dyn RuaAttr>> {
-        None
-    }
+    /// Whether if the item should be included in the scan. Note that if the
+    /// item is not public, it will not be passed to this layer for scanning.
+    fn should_include<T: RuaHasAttr>(&self, item: &T) -> bool;
 
     /// Generates and writes the function.
     fn write_fn<T: RuaFn>(&mut self, f: &T);

@@ -2,5 +2,9 @@
 members = [
   "rua_annot",
   "rua_gen",
-  "rua_macros"
+  "rua_macros",
+  "cargo-toml-parser",
+]
+exclude = [
+  "cargo-toml-parser/macros"
 ]

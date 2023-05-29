@@ -4,6 +4,30 @@ use crate::models::*;
 
 pub use rua_fn::*;
 
+impl RuaStrTyped for Item {
+    fn ty(&self) -> &str {
+        match self {
+            Item::Const(_) => "const",
+            Item::Enum(_) => "enum",
+            Item::ExternCrate(_) => "extern crate",
+            Item::Fn(_) => "fn",
+            Item::ForeignMod(_) => "foreign mod",
+            Item::Impl(_) => "impl",
+            Item::Macro(_) => "macro",
+            Item::Mod(_) => "mod",
+            Item::Static(_) => "static",
+            Item::Struct(_) => "struct",
+            Item::Trait(_) => "trait",
+            Item::TraitAlias(_) => "trait alias",
+            Item::Type(_) => "type",
+            Item::Union(_) => "union",
+            Item::Use(_) => "use",
+            Item::Verbatim(_) => "verbatim",
+            _ => todo!(),
+        }
+    }
+}
+
 /// The adapter for [syn::ItemFn].
 mod rua_fn {
     use syn::{ItemFn, Type};
@@ -301,6 +325,7 @@ mod rua_attr {
 }
 
 pub use rua_mod::*;
+use syn::Item;
 
 /// The adapter for [syn::ItemMod].
 mod rua_mod {

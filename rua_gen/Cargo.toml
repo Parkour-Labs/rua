@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 rua_macros = { path = "../rua_macros" }
 proc-macro2 = { version = "1.0.59", features = ["span-locations"] }
+cargo-toml-parser = { path = "../cargo-toml-parser" }
 syn = { version = "2.0.17", features = ["full"] }
 log = "0.4.17"

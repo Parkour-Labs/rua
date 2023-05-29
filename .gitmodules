@@ -1,0 +1,3 @@
+[submodule "cargo-toml-parser"]
+	path = cargo-toml-parser
+	url = https://github.com/Parkour-Labs/cargo-toml-parser.git
