@@ -1,3 +1,5 @@
+//! Error types.
+
 use std::{error::Error, path::PathBuf};
 
 /// An error that occurs when parsing a file.
@@ -7,6 +9,8 @@ pub enum RuaError {
     FsError(RuaFsError),
     /// An error that occurs when parsing a file.
     ParseError(ParseError),
+    /// An error that occurs during a conversion.
+    ConversionError(ConversionError),
 }
 
 impl std::fmt::Display for RuaError {
@@ -14,6 +18,7 @@ impl std::fmt::Display for RuaError {
         match self {
             RuaError::FsError(e) => write!(f, "{}", e),
             RuaError::ParseError(e) => write!(f, "{}", e),
+            RuaError::ConversionError(e) => write!(f, "{}", e),
         }
     }
 }
@@ -23,6 +28,7 @@ impl Error for RuaError {
         match self {
             RuaError::FsError(e) => Some(e),
             RuaError::ParseError(e) => Some(e),
+            RuaError::ConversionError(e) => Some(e),
         }
     }
 }
@@ -31,7 +37,12 @@ impl Error for RuaError {
 #[derive(Debug)]
 pub enum RuaFsError {
     /// An error that occurs when reading a file.
-    ReadFileErr { path: PathBuf, err: Box<dyn Error> },
+    ReadFileErr {
+        /// The path to the file that caused the error.
+        path: PathBuf,
+        /// The error that occurred.
+        err: Box<dyn Error>,
+    },
     /// An error that occurs when reading a file.
     FileNotFoundErr(PathBuf),
 }
@@ -78,3 +89,34 @@ impl Error for ParseError {
         Some(&*self.err)
     }
 }
+
+#[derive(Debug)]
+pub struct ConversionError {
+    /// The line number that caused the error.
+    pub line: usize,
+    /// The column number that caused the error.
+    pub column: usize,
+    /// The source type.
+    pub source_type: Option<String>,
+    /// The target type.
+    pub target_type: Option<String>,
+}
+
+impl std::fmt::Display for ConversionError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "(line {}, column {}): failed to convert",
+            self.line, self.column
+        )?;
+        if let Some(source_type) = &self.source_type {
+            write!(f, " from {}", source_type)?;
+        }
+        if let Some(target_type) = &self.target_type {
+            write!(f, " to {}", target_type)?;
+        }
+        Ok(())
+    }
+}
+
+impl Error for ConversionError {}

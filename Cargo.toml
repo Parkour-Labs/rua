@@ -3,7 +3,6 @@ members = [
   "rua_annot",
   "rua_gen",
   "rua_macros",
-  "rua_config",
   "cargo-toml-parser",
 ]
 exclude = [

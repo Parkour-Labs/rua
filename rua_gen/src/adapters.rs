@@ -245,8 +245,8 @@ mod rua_var {
         }
 
         impl RuaTyped for PatType {
-            fn ty(&self) -> &Type {
-                &self.ty
+            fn ty(&self) -> &RuaType {
+                &self.ty.t
             }
         }
 
@@ -259,7 +259,7 @@ mod rua_var {
         use super::*;
 
         impl RuaTyped for Type {
-            fn ty(&self) -> &Type {
+            fn ty(&self) -> &RuaType {
                 self
             }
         }
@@ -358,4 +358,41 @@ mod rua_mod {
     }
 
     impl RuaMod for ItemMod {}
+}
+
+pub use rua_type::*;
+mod rua_type {
+    use crate::errors::ConversionError;
+
+    use super::*;
+    use syn::Type;
+
+    impl TryFrom<&Type> for RuaType {
+        type Error = ConversionError;
+
+        fn try_from(value: &Type) -> Result<Self, Self::Error> {
+            match value {
+                Type::Array(arr) => {
+                    let ty: RuaType = arr.elem.ty();
+                    let len = arr.len;
+                    todo!()
+                }
+                Type::BareFn(bare_fn) => todo!(),
+                Type::Group(group) => todo!(),
+                Type::ImplTrait(impl_trait) => todo!(),
+                Type::Infer(infer) => todo!(),
+                Type::Macro(macro_) => todo!(),
+                Type::Never(never) => todo!(),
+                Type::Paren(paren) => todo!(),
+                Type::Path(path) => todo!(),
+                Type::Ptr(ptr) => todo!(),
+                Type::Reference(reference) => todo!(),
+                Type::Slice(slice) => todo!(),
+                Type::TraitObject(trait_object) => todo!(),
+                Type::Tuple(tuple) => todo!(),
+                Type::Verbatim(verbatim) => todo!(),
+                _ => todo!(),
+            }
+        }
+    }
 }
