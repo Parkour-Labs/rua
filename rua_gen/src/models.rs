@@ -136,7 +136,7 @@ pub trait Rua {
     /// for us to test things out.
     fn read_file(&self, path: impl AsRef<Path>) -> Result<String, RuaFsError> {
         let path = path.as_ref();
-        std::fs::read_to_string(path).map_err(|e| RuaFsError {
+        std::fs::read_to_string(path).map_err(|e| RuaFsError::ReadFileErr {
             path: path.to_path_buf(),
             err: Box::new(e),
         })

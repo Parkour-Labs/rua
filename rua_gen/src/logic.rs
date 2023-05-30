@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use crate::{
     errors::{ParseError, RuaError, RuaFsError},
-    models::{Rua, RuaHasAttr, RuaNamed, RuaStrTyped, RuaVisible},
+    models::{Rua, RuaHasAttr, RuaNamed, RuaVisible},
 };
 use cargo_toml_parser::{CargoToml, Package, Workspace};
 use syn::File;
@@ -84,7 +84,7 @@ impl<T: Rua> RuaRunner<T> {
             for member in workspace.members {
                 log::info!("Workspace member: {}", member);
                 self.modules.push(RuaModule::new(
-                    member,
+                    member.clone(),
                     RuaModuleType::CrateModule,
                     self.rua.entry_path().join(member),
                 ));
@@ -123,7 +123,7 @@ impl<T: Rua> RuaRunner<T> {
         module: &RuaModule,
     ) -> Result<&mut Self, RuaError> {
         let path = self.get_valid_file_path(module).ok_or_else(|| {
-            let err = RuaFsError::FileNotFoundErr(module.name.into());
+            let err = RuaFsError::FileNotFoundErr(module.name.clone().into());
             log::error!("Failed to find file module: {}", err);
             RuaError::FsError(err)
         })?;
